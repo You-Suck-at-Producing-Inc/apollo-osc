@@ -13,7 +13,7 @@ LOCAL_PORT = 11001
 # An Ableton Live tick is 100ms. This constant is typically used for timeouts,
 # and factors in some extra time for processing overhead.
 #--------------------------------------------------------------------------------
-TICK_DURATION = 0.150
+TICK_DURATION = 2.24 # 0.150
 
 class AbletonOSCClient:
     def __init__(self, hostname="127.0.0.1", port=REMOTE_PORT, client_port=LOCAL_PORT):
@@ -155,9 +155,11 @@ class AbletonOSCClient:
 
 def main(args):
     client = AbletonOSCClient(args.hostname, args.port)
-    client.send_message("/live/song/set/tempo", [125.0])
+    # client.send_message("/live/song/set/tempo", [125.0])
     tempo = client.query("/live/song/get/tempo")
+    ins = client.query("/live/browser/get/instruments")
     print("Got song tempo: %.1f" % tempo[0])
+    print(ins)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Client for AbletonOSC")

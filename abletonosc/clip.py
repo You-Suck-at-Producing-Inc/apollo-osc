@@ -1,7 +1,10 @@
 import re
 from typing import Tuple, Callable, Any, Optional
 from .handler import AbletonOSCHandler
-import Live
+try:
+    import Live
+except ImportError:
+    print("ImportError: Unable to import Live")
 
 def note_name_to_midi(name):
     """ Maps a MIDI note name (D3, C#6) to a value.

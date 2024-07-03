@@ -33,10 +33,13 @@ class Manager(ControlSurface):
         and relay error messages via OSC.
         """
         module_path = os.path.dirname(os.path.realpath(__file__))
+        print(module_path)
         log_dir = os.path.join(module_path, "logs")
+        print(log_dir)
         if not os.path.exists(log_dir):
             os.mkdir(log_dir, 0o755)
         log_path = os.path.join(log_dir, "abletonosc.log")
+        print(log_path)
         self.log_file_handler = logging.FileHandler(log_path)
         self.log_file_handler.setLevel(self.log_level.upper())
         formatter = logging.Formatter('(%(asctime)s) [%(levelname)s] %(message)s')
@@ -83,6 +86,7 @@ class Manager(ControlSurface):
             self.handlers = [
                 abletonosc.SongHandler(self),
                 abletonosc.ApplicationHandler(self),
+                abletonosc.BrowserHandler(self),
                 abletonosc.ClipHandler(self),
                 abletonosc.ClipSlotHandler(self),
                 abletonosc.TrackHandler(self),
@@ -109,6 +113,7 @@ class Manager(ControlSurface):
     def reload_imports(self):
         try:
             importlib.reload(abletonosc.application)
+            importlib.reload(abletonosc.browser)
             importlib.reload(abletonosc.clip)
             importlib.reload(abletonosc.clip_slot)
             importlib.reload(abletonosc.device)

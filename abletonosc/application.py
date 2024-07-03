@@ -1,4 +1,7 @@
-import Live
+try:
+    import Live
+except ImportError:
+    print("ImportError: Unable to import Live")
 from typing import Tuple
 from .handler import AbletonOSCHandler
 

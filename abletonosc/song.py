@@ -1,7 +1,10 @@
 import os
 import sys
 import tempfile
-import Live
+try:
+    import Live
+except ImportError:
+    print("ImportError: Unable to import Live")
 import json
 from functools import partial
 from typing import Tuple, Any
@@ -40,6 +43,7 @@ class SongHandler(AbletonOSCHandler):
             "trigger_session_record",
             "undo"
         ]:
+            # assert 1 == 2, f"{dir(self.song)}" # Song.Song obj
             callback = partial(self._call_method, self.song, method)
             self.osc_server.add_handler("/live/song/%s" % method, callback)
 

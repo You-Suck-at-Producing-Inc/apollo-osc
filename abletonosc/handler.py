@@ -1,4 +1,7 @@
-from ableton.v2.control_surface.component import Component
+try:
+    from ableton.v2.control_surface.component import Component
+except ImportError:
+    print("ImportError: Unable to import Component")
 from typing import Optional, Tuple, Any
 import logging
 from .osc_server import OSCServer
@@ -34,6 +37,7 @@ class AbletonOSCHandler(Component):
 
     def _get_property(self, target, prop, params: Optional[Tuple] = ()) -> Tuple[Any]:
         try:
+            print("nice")
             value = getattr(target, prop)
         except RuntimeError:
             #--------------------------------------------------------------------------------
