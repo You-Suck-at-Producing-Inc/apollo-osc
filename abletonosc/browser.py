@@ -2,8 +2,8 @@ try:
     import Live
 except ImportError:
     print("ImportError: Unable to import Live")
-from typing import Tuple, Any, Callable, Optional
-from functools import partial
+# from typing import Tuple, Any, Callable, Optional
+# from functools import partial
 from .handler import AbletonOSCHandler
 import os
 
@@ -17,7 +17,7 @@ class BrowserHandler(AbletonOSCHandler):
     def init_api(self):
         temp_dir = '/tmp'
         self.browser = Live.Application.get_application().browser
-        self.chain = Live.Application.get_application().chain
+        # self.chain = Live.Application.get_application().chain
 
         methods = [
             "load_item",
