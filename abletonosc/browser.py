@@ -6,6 +6,7 @@ from typing import Tuple, Any, Callable, Optional, Union, List
 # from functools import partial
 from .handler import AbletonOSCHandler
 import os
+import json
 
 from .data_structures import LiveDeviceTree # TODO: reload this properly so you don't have to restart OSC ahhh
 
@@ -53,6 +54,9 @@ class BrowserHandler(AbletonOSCHandler):
             #     return uris
             
             device_tree.save_tree(temp_file_path)
+            device_tree_json = device_tree.to_json()
+            with open(temp_file_path.replace('.pkl', '.json'), 'w') as f:
+                f.write(json.dumps(device_tree_json))
             return temp_file_path
         
             result = [i.uri for i in self.browser.instruments.children]

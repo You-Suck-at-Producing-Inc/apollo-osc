@@ -121,6 +121,23 @@ class LiveDeviceTree:
             return traverse(other_tree)
         else:
             return None
+        
+    def to_json(self):
+        def traverse(node):
+            if node.is_leaf():
+                return {
+                    'name': node.name,
+                    'type': node.node_type,
+                    'children': []
+                }
+            else:
+                return {
+                    'name': node.name,
+                    'type': node.node_type,
+                    'children': [traverse(child) for child in node.children]
+                }
+        
+        return traverse(self.tree)
 
     def __repr__(self):
         def traverse(node, indent=""):
