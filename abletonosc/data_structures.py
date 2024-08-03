@@ -1,6 +1,7 @@
 import os
 import sys
 import pickle
+import json
 
 project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 if project_dir not in sys.path:
@@ -31,17 +32,40 @@ class LiveDeviceTree:
 
     def build_tree(self, root):
         def traverse(node):
+            try:
+                name = node.name
+            except AttributeError:
+                return None
             name = node.name
             node_type = 'instrument'  # Customize this if there are other types
             tree_node = TreeNode(name, node_type)
             
             for child in node.children:
                 child_tree_node = traverse(child)
-                tree_node.add_child(child_tree_node)
+                if child_tree_node is not None:
+                    tree_node.add_child(child_tree_node)
             
             return tree_node
 
         return traverse(root)
+
+    def merge_tree(self, other_tree):
+        if self.tree is None:
+            self.tree = other_tree.tree
+        else:
+            self._merge_nodes(self.tree, other_tree.tree)
+
+    def _merge_nodes(self, node1, node2):
+        if node1 is None:
+            return node2
+        if node2 is None:
+            return node1
+        for child in node2.children:
+            existing_child = next((n for n in node1.children if n.name == child.name), None)
+            if existing_child:
+                self._merge_nodes(existing_child, child)
+            else:
+                node1.add_child(child)
 
     def get_leaf_nodes(self):
         leaves = []
