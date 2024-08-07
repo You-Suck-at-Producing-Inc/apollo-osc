@@ -18,8 +18,7 @@ class BrowserHandler(AbletonOSCHandler):
         self.temp_dir = tempfile.gettempdir()
         self.run_once = False
 
-    def init_api(self):
-        properties_r = [
+        self.properties_r = [
             "audio_effects",
             "clips",
             "drums",
@@ -34,11 +33,8 @@ class BrowserHandler(AbletonOSCHandler):
         temp_file_path = os.path.join(self.temp_dir, 'ableton_full_browser_tree_data.pkl')
         json_file_path = temp_file_path.replace('.pkl', '.json')
 
-        if os.path.exists(temp_file_path):
-            return temp_file_path, json_file_path
-
         full_tree = LiveDeviceTree()
-        for category in properties_r:
+        for category in self.properties_r:
             category_tree = LiveDeviceTree(getattr(self.browser, category))
             full_tree.merge_tree(category_tree)
 
@@ -50,6 +46,7 @@ class BrowserHandler(AbletonOSCHandler):
 
         self.run_once = True # could add a timer to refresh the tree
 
+    def init_api(self):
         def get_browser_tree(category: str):
             device_tree = LiveDeviceTree(getattr(self.browser, category))
             temp_file_path = os.path.join(self.temp_dir, f'ableton_{category}_tree_data.pkl')
@@ -68,7 +65,7 @@ class BrowserHandler(AbletonOSCHandler):
                 return temp_file_path, json_file_path
 
             full_tree = LiveDeviceTree()
-            for category in properties_r:
+            for category in self.properties_r:
                 category_tree = LiveDeviceTree(getattr(self.browser, category))
                 full_tree.merge_tree(category_tree)
 
@@ -88,7 +85,7 @@ class BrowserHandler(AbletonOSCHandler):
             full_tree = LiveDeviceTree()
             full_tree.load_tree_from_file(os.path.join(self.temp_dir, 'ableton_full_browser_tree_data.pkl'))
             
-            for category in properties_r:
+            for category in self.properties_r:
                 browser_item = full_tree.find_corresponding_node(getattr(self.browser, category), name)
                 if browser_item is not None:
                     self.browser.load_item(browser_item)
