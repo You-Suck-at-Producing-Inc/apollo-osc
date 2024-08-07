@@ -16,6 +16,7 @@ class BrowserHandler(AbletonOSCHandler):
         self.class_identifier = "browser"
         self.browser = Live.Application.get_application().browser
         self.temp_dir = tempfile.gettempdir()
+        self.run_once = False
 
     def init_api(self):
         properties_r = [
@@ -30,6 +31,25 @@ class BrowserHandler(AbletonOSCHandler):
             # "user_library"
         ]
 
+        temp_file_path = os.path.join(self.temp_dir, 'ableton_full_browser_tree_data.pkl')
+        json_file_path = temp_file_path.replace('.pkl', '.json')
+
+        if os.path.exists(temp_file_path):
+            return temp_file_path, json_file_path
+
+        full_tree = LiveDeviceTree()
+        for category in properties_r:
+            category_tree = LiveDeviceTree(getattr(self.browser, category))
+            full_tree.merge_tree(category_tree)
+
+        full_tree.save_tree(temp_file_path)
+        
+        full_tree_json = full_tree.to_json()
+        with open(json_file_path, 'w') as f:
+            json.dump(full_tree_json, f)
+
+        self.run_once = True # could add a timer to refresh the tree
+
         def get_browser_tree(category: str):
             device_tree = LiveDeviceTree(getattr(self.browser, category))
             temp_file_path = os.path.join(self.temp_dir, f'ableton_{category}_tree_data.pkl')
@@ -41,18 +61,24 @@ class BrowserHandler(AbletonOSCHandler):
             return temp_file_path
 
         def get_full_browser_tree(_):
+            temp_file_path = os.path.join(self.temp_dir, 'ableton_full_browser_tree_data.pkl')
+            json_file_path = temp_file_path.replace('.pkl', '.json')
+
+            if os.path.exists(temp_file_path) and self.run_once:
+                return temp_file_path, json_file_path
+
             full_tree = LiveDeviceTree()
             for category in properties_r:
                 category_tree = LiveDeviceTree(getattr(self.browser, category))
                 full_tree.merge_tree(category_tree)
 
-            temp_file_path = os.path.join(self.temp_dir, 'ableton_full_browser_tree_data.pkl')
             full_tree.save_tree(temp_file_path)
             
             full_tree_json = full_tree.to_json()
-            json_file_path = temp_file_path.replace('.pkl', '.json')
             with open(json_file_path, 'w') as f:
                 json.dump(full_tree_json, f)
+
+            self.run_once = True # could add a timer to refresh the tree
 
             return temp_file_path, json_file_path
 
